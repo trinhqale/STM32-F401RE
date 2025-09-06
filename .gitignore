@@ -1,0 +1,59 @@
+# --- Build outputs (keep binaries out of git) ---
+build/
+out/
+**/build/
+**/out/
+Debug/
+Release/
+**/Debug/
+**/Release/
+*.o
+*.d
+*.su
+*.map
+*.lst
+*.elf
+*.bin
+*.hex
+*.s19
+*.axf
+
+# --- STM32CubeIDE / Eclipse project clutter ---
+.settings/
+.metadata/
+STM32CubeIDE/
+.cproject
+.project
+.mxproject
+*.launch
+
+# --- CubeMX caches (keep the .ioc itself tracked) ---
+# (Do NOT ignore *.ioc)
+
+# --- IDE/editor junk ---
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+.idea/
+*.code-workspace
+
+# --- CMake (if you use it later) ---
+CMakeFiles/
+CMakeCache.txt
+cmake-build-*/
+compile_commands.json
+
+# --- OS cruft ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Logs / temp ---
+*.log
+*.tmp
+*~
+
+# --- Docker/installer blobs (don’t commit big installers) ---
+st-stm32cubeclt_*.sh
+st-stm32cubeclt_*.sh.zip
