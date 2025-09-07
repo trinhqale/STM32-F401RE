@@ -12,28 +12,26 @@ RUN apt-get update && apt-get install -y \
     libfontconfig1 libfreetype6 \
  && rm -rf /var/lib/apt/lists/*
 
-
-
-# 1) Copy the ZIP you have, e.g. st-stm32cubeclt_1.19.0_..._amd64.sh.zip
-COPY st-stm32cubeclt_*.sh.zip /tmp/stm32clt.zip
+# 1) Copy the ZIP (keep your wildcard). IMPORTANT: The ZIP must be inside the build context.
+#    If you run `docker buildx build ... ./docker`, put the ZIP in the ./docker/ folder.
+COPY ./st-stm32cubeclt_*.sh.zip /opt/stm32clt.zip
+COPY . /workspace
+RUN ls -alh /opt && test -s /opt/stm32clt.zip
 
 # 2) Unzip -> find the self-extracting .sh -> extract (noexec) -> untar payload to /opt/stm32cubeclt
 RUN set -euo pipefail; \
-    unzip -q /tmp/stm32clt.zip -d /tmp/stm32clt_zip; \
+    unzip -q /opt/stm32clt.zip -d /opt/stm32clt_zip; \
     shopt -s nullglob; \
-    shfiles=(/tmp/stm32clt_zip/*.sh); \
-    if (( ${#shfiles[@]} != 1 )); then echo "Expected 1 .sh inside ZIP; found ${#shfiles[@]}"; ls -lah /tmp/stm32clt_zip; exit 1; fi; \
+    shfiles=(/opt/stm32clt_zip/*.sh); \
+    if (( ${#shfiles[@]} != 1 )); then echo "Expected 1 .sh inside ZIP; found ${#shfiles[@]}"; ls -lah /opt/stm32clt_zip; exit 1; fi; \
     chmod +x "${shfiles[0]}"; \
-    "${shfiles[0]}" --noexec --target /tmp/stm32clt_extracted; \
-    # Find the inner tarball
-    tgz=(/tmp/stm32clt_extracted/*.tar.gz); \
-    if (( ${#tgz[@]} != 1 )); then echo "Expected 1 tar.gz after extraction; found ${#tgz[@]}"; ls -lah /tmp/stm32clt_extracted; exit 1; fi; \
+    "${shfiles[0]}" --noexec --target /opt/stm32clt_extracted; \
+    tgz=(/opt/stm32clt_extracted/*.tar.gz); \
+    if (( ${#tgz[@]} != 1 )); then echo "Expected 1 tar.gz after extraction; found ${#tgz[@]}"; ls -lah /opt/stm32clt_extracted; exit 1; fi; \
     mkdir -p /opt/stm32cubeclt; \
-    # Some archives have a top-level directory; strip it if present
     tar -xzf "${tgz[0]}" -C /opt/stm32cubeclt --strip-components=1 || \
       tar -xzf "${tgz[0]}" -C /opt/stm32cubeclt; \
-    # Clean up
-    rm -rf /tmp/stm32clt.zip /tmp/stm32clt_zip /tmp/stm32clt_extracted
+    rm -rf /opt/stm32clt.zip /opt/stm32clt_zip /opt/stm32clt_extracted
 
 # 3) Put tools on PATH
 ENV PATH="/opt/stm32cubeclt/GNU-tools-for-STM32/bin:/opt/stm32cubeclt/STM32CubeProgrammer/bin:/opt/stm32cubeclt/bin:${PATH}"
