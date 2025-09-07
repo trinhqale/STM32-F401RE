@@ -39,7 +39,7 @@ docker build -t stm32-builder ./docker
 docker run --rm -v "$PWD:/work" -w /work stm32-builder make
 ```
 
-## Project Configuration
+## Project Configuration (not yet tested, use with caution)
 
 Customize settings in project.mk. Example:
 
@@ -60,9 +60,10 @@ Ensure the correct startup file and HAL/CMSIS headers are included
 
 CubeMX can safely regenerate code into STM32-F401RE/ without breaking Git history
 Line endings normalized to LF for cross-platform safety:
+```
 git add --renormalize .
 git commit -m "Normalize line endings"
-
+```
 
 ## GitHub Actions CI (Optional)
 
